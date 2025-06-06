@@ -5,13 +5,39 @@ resource "aws_instance" "ec2" {
   vpc_security_group_ids      = [aws_security_group.sg.id]
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true
-  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
-  
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
+
   root_block_device {
     volume_size = var.volume_size
   }
-  user_data = template_file.user_data.rendered
-
+  user_data = <<-EOF
+    #!/bin/bash
+    set -e
+    sudo apt-get update -y
+    sudo apt-get install unzip  -y
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+    
+    # Create CloudWatch alarm for high CPU utilization
+    TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+    INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/instance-id)
+    aws cloudwatch put-metric-alarm \
+      --alarm-name "HighCPUAlarm" \
+      --metric-name CPUUtilization \
+      --namespace AWS/EC2 \
+      --statistic Average \
+      --period 60 \
+      --threshold 80 \
+      --comparison-operator GreaterThanThreshold \
+      --dimensions Name=InstanceId,Value=$INSTANCE_ID \
+      --evaluation-periods 5 \
+      --unit Percent \
+      --region ${var.aws_region}
+  EOF
+  tags = {
+    Environment = var.tags
+  }
 }
 
 resource "aws_security_group" "sg" {
@@ -38,19 +64,7 @@ resource "aws_security_group" "sg" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow all outbound traffic"
   }
-
-  tags = merge(
-    {
-      Name = "${var.instance_name}-sg"
-    },
-    var.tags
-  )
-}
-
-resource "template_file" "user_data" {
-  template = file("${path.module}/user_data.sh.tftpl")
-  vars = {
-    aws_region        = var.aws_region
-    instance_id       = aws_instance.ec2.id
+  tags = {
+    Environment = var.tags
   }
 }

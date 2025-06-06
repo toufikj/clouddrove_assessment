@@ -12,7 +12,6 @@ resource "aws_iam_role" "ec2_cloudwatch_role" {
       }
     ]
   })
-  tags = var.tags
 }
 
 resource "aws_iam_role_policy" "ec2_cloudwatch_policy" {

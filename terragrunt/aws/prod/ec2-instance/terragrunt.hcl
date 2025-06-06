@@ -8,14 +8,6 @@ include "stage" {
   expose = true
 }
 
-locals {
-  # merge tags
-  local_tags = {
-    "Name" = "login"
-  }
-
-  tags = merge(include.root.locals.root_tags, include.stage.locals.tags, local.local_tags)
-}
 
 generate "provider_global" {
   path      = "provider.tf"
@@ -40,6 +32,7 @@ EOF
 
 ########################
 inputs = {
+  aws_region                  = "ap-south-1"
   ami_id                      = "ami-0e35ddab05955cf57"
   instance_type               = "t2.micro"
   key_name                    = "account799"
@@ -49,7 +42,7 @@ inputs = {
   volume_size                 = 10
   allowed_cidr_blocks         = ["0.0.0.0/0"]
   # Tags
-  tags                        = local.tags
+  tags                        = "DevOpsTest"
   inbound_ports = [
     {
       from_port   = 80

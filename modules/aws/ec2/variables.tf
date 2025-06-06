@@ -44,18 +44,7 @@ variable "allowed_cidr_blocks" {
 
 variable "tags" {
   description = "Tags to apply to all resources"
-  type        = map(string)
-  default     = {}
-}
-
-variable "github_token" {
-  description = "GitHub token for cloning private repositories"
   type        = string
-  sensitive   = true
-}
-
-variable "bucket_name" {
-  type = string
 }
 
 variable "inbound_ports" {
@@ -70,25 +59,5 @@ variable "inbound_ports" {
 
 variable "aws_region" {
   description = "AWS region to deploy resources"
-  type        = string
-}
-
-variable "static_repo_url" {
-  description = "URL of the static assets repository"
-  type        = string
-}
-
-variable "static_repo_dir" {
-  description = "Directory to clone static repo into"
-  type        = string
-}
-
-variable "project_repo_url" {
-  description = "URL of the project repository"
-  type        = string
-}
-
-variable "project_repo_dir" {
-  description = "Directory to clone project repo into"
   type        = string
 }
