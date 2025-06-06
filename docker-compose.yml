@@ -17,7 +17,6 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
-    restart: unless-stopped
 
   elasticsearch:
     image: elasticsearch:8.12.2
@@ -26,24 +25,18 @@ services:
       - xpack.security.enabled=false
     ports:
       - "9200:9200"
-    restart: unless-stopped
 
   logstash:
     image: logstash:8.12.2
     volumes:
       - ./logstash_pipeline:/usr/share/logstash/pipeline
       - ./logs:/var/log
-      - ./app.log:/var/log/app.log
     depends_on:
       - elasticsearch
-    restart: unless-stopped
 
   kibana:
     image: kibana:8.12.2
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - "5601:5601"
     depends_on:
       - elasticsearch
-    restart: unless-stopped
