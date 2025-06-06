@@ -1,0 +1,36 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape EC2 instance with Node Exporter
+  - job_name: 'ec2_node'
+    static_configs:
+      - targets: ['X.X.X.X:9100']  # Replace with your EC2 public IP
+
+  # Scrape Redis container
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+
+  # Scrape Web container (if using something like node_exporter or custom metrics endpoint)
+  - job_name: 'web'
+    static_configs:
+      - targets: ['web:80']
+
+  # Optional: Scrape Logstash (if monitoring enabled)
+  - job_name: 'logstash'
+    metrics_path: "/_node/stats"
+    static_configs:
+      - targets: ['logstash:9600']
+
+  # Optional: Scrape Elasticsearch
+  - job_name: 'elasticsearch'
+    metrics_path: "/_prometheus/metrics"
+    static_configs:
+      - targets: ['elasticsearch:9200']
