@@ -18,7 +18,7 @@ on:
         description: "Select the resources name"
         options:
           - ec2-instance  
-          - ssm-iam-role
+          - s3
       tf_function:
         type: choice
         description: "infrastructure planning / deployment"
@@ -62,8 +62,8 @@ jobs:
         id: set-folder
         run: |
           echo "tg_dir=terragrunt/${{ env.resource_env }}/${{ inputs.environment_name }}/${{ inputs.resource }}" >> $GITHUB_ENV
+      
       - name: Terraform Plan
-        # if: inputs.tf_function == 'plan'
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tf_version: ${{ env.TERRAFORM_VERSION }}
@@ -73,11 +73,10 @@ jobs:
         id: terraform-plan
 
       - name: Deploy
-        # if: inputs.tf_function == 'apply' && github.ref == 'refs/heads/main' && inputs.environment_name == 'prod'
         if: inputs.tf_function == 'destroy'
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tf_version: ${{ env.TERRAFORM_VERSION }}
           tg_version: ${{ env.TERRAGRUNT_VERSION }}
-          tg_dir: ${{ env.tg_dir }} # terragrunt/${{ env.resource_env }}_terragrunt/${{ env.resource_env }}/${{ inputs.environment_name }}/${{ inputs.resource }}
+          tg_dir: ${{ env.tg_dir }} 
           tg_command: 'destroy'
