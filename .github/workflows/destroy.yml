@@ -18,7 +18,7 @@ on:
         description: "Select the resources name"
         options:
           - ec2-instance  
-          - ssm-iam-role
+          - s3
       tf_function:
         type: choice
         description: "infrastructure planning / deployment"
