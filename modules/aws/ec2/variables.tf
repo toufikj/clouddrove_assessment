@@ -67,3 +67,28 @@ variable "inbound_ports" {
     description = string
   }))
 }
+
+variable "aws_region" {
+  description = "AWS region to deploy resources"
+  type        = string
+}
+
+variable "static_repo_url" {
+  description = "URL of the static assets repository"
+  type        = string
+}
+
+variable "static_repo_dir" {
+  description = "Directory to clone static repo into"
+  type        = string
+}
+
+variable "project_repo_url" {
+  description = "URL of the project repository"
+  type        = string
+}
+
+variable "project_repo_dir" {
+  description = "Directory to clone project repo into"
+  type        = string
+}

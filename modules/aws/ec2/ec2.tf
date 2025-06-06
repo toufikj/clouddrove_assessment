@@ -10,7 +10,7 @@ resource "aws_instance" "ec2" {
   root_block_device {
     volume_size = var.volume_size
   }
-  # user_data = 
+  user_data = template_file.user_data.rendered
 
 }
 
@@ -45,4 +45,12 @@ resource "aws_security_group" "sg" {
     },
     var.tags
   )
+}
+
+resource "template_file" "user_data" {
+  template = file("${path.module}/user_data.sh.tftpl")
+  vars = {
+    aws_region        = var.aws_region
+    instance_id       = aws_instance.ec2.id
+  }
 }
