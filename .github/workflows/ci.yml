@@ -3,6 +3,11 @@ name: "Create Infrastructure Branch Based Deployment"
 on:
   workflow_dispatch:
     inputs:
+      brand_name:
+        type: choice
+        description: "Select the brand name"
+        options:
+          - AWS
       environment_name:
         type: choice
         description: "Select the environment name"
@@ -28,6 +33,18 @@ jobs:
   terragrunt-apply:
     runs-on: ubuntu-latest
     steps:
+      - name: Set resource_env based on selected brand
+        id: set-env
+        run: |
+          case "${{ inputs.brand_name }}" in
+            "AWS")
+              echo "resource_env=aws" >> $GITHUB_ENV
+              ;;
+            *)
+              echo "resource_env=unknown" >> $GITHUB_ENV
+              ;;
+          esac
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -35,8 +52,8 @@ jobs:
         id: aws_creds
         uses: aws-actions/configure-aws-credentials@v4
         with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+            aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY_ID', inputs.brand_name)] }}
+            aws-secret-access-key: ${{ secrets[format('{0}_SECRET_ACCESS_KEY', inputs.brand_name)] }}
             aws-region: ap-south-1
 
       - name: Set tg path and install checkov
