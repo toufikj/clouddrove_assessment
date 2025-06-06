@@ -1,6 +1,8 @@
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
-  tags = var.tags
+  tags = {
+    Environment = "DevOpsTest"
+  }
 }
 
 resource "aws_s3_bucket_versioning" "versioning" {
@@ -14,8 +16,4 @@ variable "bucket_name" {
   type = string
 }
 
-variable "tags" {
-  description = "Tags to apply to all resources"
-  type        = map(string)
-  default     = {}
-}
+

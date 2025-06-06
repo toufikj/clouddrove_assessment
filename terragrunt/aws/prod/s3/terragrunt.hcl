@@ -41,9 +41,7 @@ EOF
 ########################
 inputs = {
   
-  tags                        = local.tags
-  bucket_name                 = "devops-assoc-bucket"
-  aws_region                  = "ap-south-1"
+  bucket_name                 = "devops-assoc-bucket-v1"
   
 }
 
